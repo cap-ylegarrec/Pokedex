@@ -20,7 +20,7 @@ import kotlin.collections.listOf
 @Composable
 fun PokemonListView() {
     val viewModel: PokemonViewModel = koinInject()
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.uiState.collectAsState()
 
     PokemonListContent(pokemonList = state.pokemonUIList)
 

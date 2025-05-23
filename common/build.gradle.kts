@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.native.coroutine)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -25,30 +27,65 @@ kotlin {
         }
     }
 
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        binaries {
+            framework {
+                baseName = "shared"
+            }
+        }
+    }
+
+    tasks.register("assembleReleaseXCFramework") {
+        dependsOn(
+            "linkReleaseFrameworkIosArm64",
+            "linkReleaseFrameworkIosSimulatorArm64"
+        )
+        doLast {
+            val xcodeDir = buildDir.resolve("XCFrameworks/release")
+            xcodeDir.mkdirs()
+            exec {
+                commandLine(
+                    "xcodebuild",
+                    "-create-xcframework",
+                    "-framework",
+                    "${buildDir}/bin/iosArm64/releaseFramework/shared.framework",
+                    "-framework",
+                    "${buildDir}/bin/iosSimulatorArm64/releaseFramework/shared.framework",
+                    "-output",
+                    "${xcodeDir}/shared.xcframework"
+                )
+            }
+        }
+    }
+
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.kotlinx.serialization.json)
-                implementation(libs.koin.core)
-                implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.cio)
-                implementation(libs.ktor.client.content.negotiation)
-                implementation(libs.ktor.serialization.kotlinx.json)
-                implementation(libs.kotlinx.serialization.json)
-            }
+        all {
+            languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
         }
-        val androidMain by getting {
-            dependencies {
-                implementation(libs.androidx.lifecycle.viewmodel.compose)
-                implementation(libs.androidx.activity.compose)
-                implementation(libs.ktor.client.android)
-            }
+        commonMain.dependencies {
+            implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.koin.core)
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
+        androidMain.dependencies {
+            implementation(libs.androidx.lifecycle.viewmodel.compose)
+            implementation(libs.androidx.activity.compose)
+            implementation(libs.ktor.client.android)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
     }
 }
