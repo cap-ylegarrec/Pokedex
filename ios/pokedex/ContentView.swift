@@ -14,13 +14,13 @@ class PokemonViewModelWrapper: ObservableObject {
     @Published var pokemonList: [PokemonUI] = []
     @Published var isLoading: Bool = false
 
-    let viewModel: PokemonViewModel
+    let viewModel: PokemonListViewModel
     private var cancellable: AnyCancellable?
 
     init() {
-        viewModel = Shared().getPokemonViewModel()
-        cancellable = createPublisher(for: viewModel.uiStateFlow)
-            .replaceError(with: viewModel.uiState)
+        viewModel = Shared().getPokemonListViewModel()
+        cancellable = createPublisher(for: viewModel.stateFlow)
+            .replaceError(with: viewModel.state)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
                 self?.pokemonList = state.pokemonUIList
@@ -30,7 +30,7 @@ class PokemonViewModelWrapper: ObservableObject {
 
     func loadPokemons() {
         print("loadPokemons called")
-        viewModel.handleIntent(intent: PokemonIntent.LoadPokemonList.shared)
+        viewModel.handleIntent(intent: PokemonListIntent.LoadPokemonList.shared)
     }
 }
 
@@ -50,7 +50,7 @@ struct ContentView: View {
                     VStack(alignment: .leading) {
                         Text("#\(pokemon.id) \(pokemon.name)")
                             .font(.headline)
-                        Text(pokemon.colorList.joined(separator: ", "))
+                        Text(pokemon.backgroundColorList.joined(separator: ", "))
                             .font(.subheadline)
                             .foregroundColor(.gray)
                     }

@@ -1,0 +1,26 @@
+CREATE TABLE Pokemon (
+    id INTEGER NOT NULL PRIMARY KEY,
+    pokedexId INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    typeList TEXT NOT NULL,
+    imageUrl TEXT NOT NULL,
+    sprite TEXT NOT NULL,
+    generation INTEGER NOT NULL,
+    slug TEXT NOT NULL,
+    stats TEXT NOT NULL,
+    preEvolution TEXT,
+    evolutions TEXT NOT NULL,
+    resistances TEXT NOT NULL
+);
+
+selectAll:
+SELECT * FROM Pokemon;
+
+selectById:
+SELECT * FROM Pokemon WHERE id = ?;
+
+insertOrReplace:
+INSERT OR REPLACE INTO Pokemon (id, pokedexId, name, typeList, imageUrl, sprite, generation, slug, stats, preEvolution, evolutions, resistances) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteAll:
+DELETE FROM Pokemon;

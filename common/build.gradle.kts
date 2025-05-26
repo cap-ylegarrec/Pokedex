@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.native.coroutine)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.sqldelight)
 }
 
 android {
@@ -75,17 +76,29 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.koin.core)
+            implementation(libs.coroutines.extensions)
+            implementation(libs.primitive.adapters)
         }
         androidMain.dependencies {
             implementation(libs.androidx.lifecycle.viewmodel.compose)
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.android)
+            implementation(libs.sqldelight.android)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation(libs.sqldelight.native)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
+        }
+    }
+}
+
+sqldelight {
+    databases {
+        create("PokemonDB") {
+            packageName.set("pokemon.data.datasource")
         }
     }
 }

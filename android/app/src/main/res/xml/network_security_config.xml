@@ -1,0 +1,12 @@
+<network-security-config xmlns:tools="http://schemas.android.com/tools">
+    <!-- "base-config" is for global configuration, that means it will target release version -->
+    <base-config>
+        <trust-anchors>
+            <!-- Trust Anchors: Android 7+ -->
+            <certificates src="system"/>
+            <!-- user installed certificate -->
+            <certificates src="user"
+                tools:ignore="AcceptsUserCertificates" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

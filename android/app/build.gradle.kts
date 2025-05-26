@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.legarrec.pokedex"
-        minSdk = 29
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.coil3.coil.compose)
     implementation(libs.coil3.coil.network.okhttp)
+    implementation(libs.androidx.navigation.compose)
     debugImplementation(libs.androidx.ui.tooling)
     implementation(project(":common"))
 

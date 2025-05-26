@@ -1,8 +1,21 @@
 package pokemon.presentation
 
+import kotlinx.serialization.Serializable
 import pokemon.domain.model.Pokemon
+import pokemon.domain.model.Stats
+import pokemon.presentation.config.TypeColors
 
-data class PokemonUI(val id: Int, val name: String, val colorList: List<String>, val imageUrl: String) {
+data class PokemonUI(
+    val id: Long,
+    val name: String,
+    val backgroundColorList: List<String>,
+    val typeList: List<TypeUI>,
+    val imageUrl: String,
+    val spriteUrl: String,
+    var previousEvolution: List<PokemonUI?> = emptyList(),
+    var nextEvolution: List<PokemonUI> = emptyList(),
+    var statsUI: StatsUI
+) {
 
     //Create PokemonUI from Pokemon
     companion object {
@@ -10,35 +23,43 @@ data class PokemonUI(val id: Int, val name: String, val colorList: List<String>,
             return PokemonUI(
                 id = pokemon.id,
                 name = pokemon.name,
-                colorList = pokemon.typeList.mapNotNull { type -> getColorByType(type) },
-                imageUrl = pokemon.imageUrl
+                backgroundColorList = pokemon.typeList.mapNotNull { type ->
+                    getBackgroundColorByType(
+                        type.name
+                    )
+                },
+                typeList = pokemon.typeList.map { type -> TypeUI.from(type) },
+                imageUrl = pokemon.imageUrl,
+                spriteUrl = pokemon.sprite,
+                statsUI = StatsUI.from(pokemon.stats)
             )
         }
 
-        //TODO manage all the types
-        // return color in hexadecimal format from type
-        private fun getColorByType(type: String): String? {
-            return when (type) {
-                "Feu" -> "#FF4500"
-                "Eau" -> "#1E90FF"
-                "Plante" -> "#32CD32"
-                "Électrik" -> "#FFD700"
-                "Roche" -> "#8B4513"
-                "Sol" -> "#D2691E"
-                "Psy" -> "#FF69B4"
-                "Insecte" -> "#ADFF2F"
-                "Normal" -> "#A9A9A9"
-                "Vol" -> "#87CEEB"
-                "Spectre" -> "#800080"
-                "Acier" -> "#C0C0C0"
-                "Fée" -> "#FFB6C1"
-                "Combat" -> "#FF6347"
-                "Poison" -> "#8A2BE2"
-                "Ténèbres" -> "#000000"
-                "Dragon" -> "#0000FF"
-                "Glace" -> "#00FFFF"
-                else -> null // Default color
-            }
+        private fun getBackgroundColorByType(typeName: String): String? {
+            return TypeColors.colors[typeName]
+        }
+    }
+}
+
+@Serializable
+data class StatsUI(
+    val HP: Int,
+    val attack: Int,
+    val defense: Int,
+    val specialAttack: Int,
+    val specialDefense: Int,
+    val speed: Int
+) {
+    companion object {
+        fun from(stats: Stats): StatsUI {
+            return StatsUI(
+                HP = stats.HP,
+                attack = stats.attack,
+                defense = stats.defense,
+                specialAttack = stats.specialAttack,
+                specialDefense = stats.specialDefense,
+                speed = stats.speed
+            )
         }
     }
 }

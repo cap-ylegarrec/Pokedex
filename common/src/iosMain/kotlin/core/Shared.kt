@@ -2,19 +2,23 @@ import di.commonModule
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.context.startKoin
-import org.koin.core.parameter.parametersOf
-import pokemon.presentation.PokemonViewModel
+import pokemon.presentation.pokemonDetail.PokemonViewModel
+import pokemon.presentation.pokemonList.PokemonListViewModel
 
 class Shared : KoinComponent {
 
     fun initialize(
     ) {
         startKoin {
-            modules(commonModule)
+            modules(iOSCommonModule)
         }
     }
 
     fun getPokemonViewModel(): PokemonViewModel {
+        return get()
+    }
+
+    fun getPokemonListViewModel(): PokemonListViewModel {
         return get()
     }
 

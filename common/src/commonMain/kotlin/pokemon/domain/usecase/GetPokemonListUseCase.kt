@@ -8,7 +8,7 @@ class GetPokemonListUseCase(
     private val repository: PokemonRepository
 ) {
     @NativeCoroutines
-    suspend fun execute(): List<Pokemon> {
-        return repository.getPokemonList()
+    suspend fun execute(generation: Int): List<Pokemon> {
+        return repository.getPokemonListByGeneration(generation)
     }
 }
