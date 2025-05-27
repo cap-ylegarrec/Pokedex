@@ -1,27 +1,35 @@
 package com.legarrec.pokedex.pokemon
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import android.app.Activity
+import android.content.Intent
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.legarrec.pokedex.R
 import org.koin.compose.koinInject // Updated import for Koin
-import pokemon.presentation.pokemonList.PokemonListIntent
-import pokemon.presentation.pokemonList.PokemonListViewModel
 import pokemon.presentation.PokemonUI
 import pokemon.presentation.StatsUI
 import pokemon.presentation.TypeUI
+import pokemon.presentation.pokemonList.PokemonListIntent
+import pokemon.presentation.pokemonList.PokemonListViewModel
 import kotlin.collections.listOf
 
 @Composable
@@ -31,14 +39,20 @@ fun PokemonListView(
 ) {
     val viewModel: PokemonListViewModel = koinInject()
     val state by viewModel.state.collectAsState()
+    val searchedPosition by viewModel.searchedPokemonPosition.collectAsState()
     val listState = rememberLazyListState()
 
-    PokemonListContent(
-        pokemonList = state.pokemonUIList,
-        onItemClick = onItemClick,
-        listState = listState,
-        onSpeak = onSpeak,
-    )
+    val speechRecognizerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val spokenText =
+                result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull()
+            spokenText?.let {
+                viewModel.handleIntent(PokemonListIntent.SearchPokemon(it))
+            }
+        }
+    }
 
     // Trigger loading items
     LaunchedEffect(Unit) {
@@ -50,9 +64,51 @@ fun PokemonListView(
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == listState.layoutInfo.totalItemsCount - 1 }
             .collect { isAtEnd ->
                 if (isAtEnd) {
-                    viewModel.loadNextGenerationIfNeeded()
+                    viewModel.handleIntent(PokemonListIntent.LoadNextGeneration)
                 }
             }
+    }
+
+    // Scroll to searched position when it changes
+    LaunchedEffect(searchedPosition) {
+        searchedPosition?.let {
+            listState.animateScrollToItem(it)
+        }
+    }
+    Box(modifier = Modifier.fillMaxSize()) {
+        PokemonListContent(
+            pokemonList = state.pokemonUIList,
+            onItemClick = onItemClick,
+            listState = listState,
+            onSpeak = onSpeak,
+        )
+
+        FloatingActionButton(
+            onClick = {
+                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                    putExtra(
+                        RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                    )
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, "fr-FR")
+                    putExtra(
+                        RecognizerIntent.EXTRA_PROMPT,
+                        "Donne le nom du Pokémon que tu cherches"
+                    )
+                }
+                speechRecognizerLauncher.launch(intent)
+            },
+            backgroundColor = Color.Blue,
+            contentColor = Color.White,
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.BottomEnd)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_microphone),
+                contentDescription = "Microphone"
+            )
+        }
     }
 }
 
