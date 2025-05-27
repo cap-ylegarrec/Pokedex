@@ -1,7 +1,9 @@
 package com.legarrec.pokedex.pokemon
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -13,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject // Updated import for Koin
 import pokemon.presentation.pokemonList.PokemonListIntent
 import pokemon.presentation.pokemonList.PokemonListViewModel
@@ -34,7 +37,7 @@ fun PokemonListView(
         pokemonList = state.pokemonUIList,
         onItemClick = onItemClick,
         listState = listState,
-        onSpeak = onSpeak
+        onSpeak = onSpeak,
     )
 
     // Trigger loading items
@@ -60,7 +63,12 @@ private fun PokemonListContent(
     onItemClick: (PokemonUI) -> Unit,
     listState: LazyListState
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize(), state = listState) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize(),
+        state = listState,
+        contentPadding = PaddingValues(top = 80.dp)
+    ) {
         items(pokemonList) { pokemon ->
             PokemonViewItem(
                 pokemon = pokemon,

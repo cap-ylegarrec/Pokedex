@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -100,12 +101,14 @@ fun PokemonDetailScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState) // Ensure the view is scrollable
+
         ) {
             // Header with gradient and Pokémon info
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(PokedexDimens.PokemonHeaderHeight)
+                    .padding(top = 80.dp)
             ) {
                 Row(
                     modifier = Modifier
