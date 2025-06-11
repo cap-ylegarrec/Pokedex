@@ -7,9 +7,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import pokemon.domain.usecase.GetPokemonListUseCase
+import pokemon.domain.usecase.GetPokemonListSortedUseCase
 
 class PokemonViewModel(
-    private val getPokemonListUseCase: GetPokemonListUseCase
+    private val getPokemonListUseCase: GetPokemonListUseCase,
+    private val getPokemonListSortedUseCase: GetPokemonListSortedUseCase
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<PokemonState> = MutableStateFlow(PokemonState(isLoading = true))
@@ -22,6 +24,9 @@ class PokemonViewModel(
             is PokemonIntent.LoadPokemonList -> viewModelScope.launch {
                 loadPokemonList()
             }
+            is PokemonIntent.LoadPokemonListSorted -> viewModelScope.launch {
+                loadPokemonListSorted()
+            }
         }
     }
 
@@ -30,7 +35,18 @@ class PokemonViewModel(
         val pokemonList = getPokemonListUseCase.execute()
         _uiState.value = PokemonState(
             pokemonUIList = pokemonList.map { pokemon -> PokemonUI.from(pokemon) },
-            isLoading = false
+            isLoading = false,
+            isSortedAlphabetically = false
+        )
+    }
+
+    private suspend fun loadPokemonListSorted() {
+        _uiState.value = _uiState.value.copy(isLoading = true)
+        val pokemonList = getPokemonListSortedUseCase.execute()
+        _uiState.value = PokemonState(
+            pokemonUIList = pokemonList.map { pokemon -> PokemonUI.from(pokemon) },
+            isLoading = false,
+            isSortedAlphabetically = true
         )
     }
 }
