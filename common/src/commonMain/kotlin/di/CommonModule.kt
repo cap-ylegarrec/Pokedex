@@ -14,6 +14,10 @@ import pokemon.presentation.PokemonViewModel
 // Pour exposer les types d'interop nécessaires à Swift
 typealias SharedKotlinx_coroutines_coreFlowCollector<T> = FlowCollector<T>
 typealias Kotlinx_coroutines_coreJob = Job
+// A VALIDER 
+// ✅ On utilise `single` (et non `factory`) pour garder une instance unique du ViewModel.
+// Côté iOS : indispensable pour observer un seul StateFlow via Swift/Combine.
+// Côté Android : le scope du ViewModel est déjà géré automatiquement par Koin/Activity/ViewModelStore.
 
 val commonModule: Module = module {
     single<PokemonRepository> { PokemonRepositoryImpl(get()) }
