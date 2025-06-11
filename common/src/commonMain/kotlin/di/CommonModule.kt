@@ -14,15 +14,27 @@ import pokemon.presentation.PokemonViewModel
 // Pour exposer les types d'interop nécessaires à Swift
 typealias SharedKotlinx_coroutines_coreFlowCollector<T> = FlowCollector<T>
 typealias Kotlinx_coroutines_coreJob = Job
-// A VALIDER 
-// ✅ On utilise `single` (et non `factory`) pour garder une instance unique du ViewModel.
-// Côté iOS : indispensable pour observer un seul StateFlow via Swift/Combine.
-// Côté Android : le scope du ViewModel est déjà géré automatiquement par Koin/Activity/ViewModelStore.
-
+/**
+ * Configuration de l'injection de dépendances avec Koin
+ * https://insert-koin.io/docs/reference/koin-core/definitions/
+ * ✅ single() : Pour les composants avec état (ViewModel avec StateFlow)
+ * ✅ factory() : Pour les composants stateless (DataSource, UseCase, Repository)
+ * 
+ * Avantages :
+ * - ViewModel : Instance unique pour éviter les problèmes de synchronisation d'état
+ * - Autres composants : Nouvelle instance à chaque injection pour optimiser la mémoire
+ */
 val commonModule: Module = module {
-    single<PokemonRepository> { PokemonRepositoryImpl(get()) }
-    single { PokemonRemoteDataSource() }
-    single { GetPokemonListUseCase(get()) }
-    single { GetPokemonListSortedUseCase(get()) }
+    // Repository : stateless → factory
+    factory<PokemonRepository> { PokemonRepositoryImpl(get()) }
+    
+    // DataSource : stateless → factory  
+    factory { PokemonRemoteDataSource() }
+    
+    // UseCases : stateless → factory
+    factory { GetPokemonListUseCase(get()) }
+    factory { GetPokemonListSortedUseCase(get()) }
+    
+    // ViewModel : avec état (StateFlow) → single pour éviter les problèmes de synchronisation
     single { PokemonViewModel(get(), get()) }
 }
