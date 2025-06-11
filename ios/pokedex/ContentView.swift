@@ -11,8 +11,7 @@ import shared
 import KMPNativeCoroutinesCombine
 
 class PokemonViewModelWrapper: ObservableObject {
-    @Published var pokemonList: [PokemonUI] = []
-    @Published var isLoading: Bool = false
+    @Published var uiState: PokemonState = PokemonState(pokemonUIList: [], isLoading: true, isSortedAlphabetically: false)
 
     let viewModel: PokemonViewModel
     private var cancellable: AnyCancellable?
@@ -23,42 +22,71 @@ class PokemonViewModelWrapper: ObservableObject {
             .replaceError(with: viewModel.uiState)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
-                self?.pokemonList = state.pokemonUIList
-                self?.isLoading = state.isLoading
+                self?.uiState = state
             }
     }
 
-    func loadPokemons() {
-        print("loadPokemons called")
-        viewModel.handleIntent(intent: PokemonIntent.LoadPokemonList.shared)
+    func handleIntent(intent: PokemonIntent) {
+        viewModel.handleIntent(intent: intent)
     }
 }
 
 struct ContentView: View {
     @StateObject private var viewModel = PokemonViewModelWrapper()
+    
     var body: some View {
         NavigationView {
-            List(viewModel.pokemonList, id: \.id) { pokemon in
-                HStack {
-                    AsyncImage(url: URL(string: pokemon.imageUrl)) { image in
-                        image.resizable()
-                    } placeholder: {
-                        ProgressView()
-                    }
-                    .frame(width: 56, height: 56)
-                    .clipShape(Circle())
-                    VStack(alignment: .leading) {
-                        Text("#\(pokemon.id) \(pokemon.name)")
-                            .font(.headline)
-                        Text(pokemon.colorList.joined(separator: ", "))
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
+            VStack {
+                if viewModel.uiState.isLoading {
+                    ProgressView("Chargement des Pokémon...")
+                        .padding()
+                } else {
+                    List(viewModel.uiState.pokemonUIList, id: \.name) { pokemon in
+                        HStack {
+                            AsyncImage(url: URL(string: pokemon.imageUrl)) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                            } placeholder: {
+                                ProgressView()
+                            }
+                            .frame(width: 60, height: 60)
+                            
+                            VStack(alignment: .leading) {
+                                Text(pokemon.name.capitalized)
+                                    .font(.headline)
+                                Text("ID: \(pokemon.id)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                        }
+                        .padding(.vertical, 4)
                     }
                 }
-                .padding(.vertical, 4)
             }
-            .navigationTitle("Pokedex")
-            .onAppear { viewModel.loadPokemons() }
+            .navigationTitle("Pokédex")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        if viewModel.uiState.isSortedAlphabetically {
+                            viewModel.handleIntent(intent: PokemonIntent.LoadPokemonList.shared)
+                        } else {
+                            viewModel.handleIntent(intent: PokemonIntent.LoadPokemonListSorted.shared)
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: viewModel.uiState.isSortedAlphabetically ? "arrow.up.arrow.down" : "textformat.abc")
+                            Text(viewModel.uiState.isSortedAlphabetically ? "Original" : "A-Z")
+                        }
+                    }
+                    .disabled(viewModel.uiState.isLoading)
+                }
+            }
+        }
+        .onAppear {
+            viewModel.handleIntent(intent: PokemonIntent.LoadPokemonList.shared)
         }
     }
 }
