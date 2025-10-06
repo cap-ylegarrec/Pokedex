@@ -91,6 +91,7 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
+            implementation(libs.coroutine.test)
         }
     }
 }

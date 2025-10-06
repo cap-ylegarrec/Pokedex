@@ -112,7 +112,7 @@ data class ApiResistance(
     val damageRelation: String
 )
 
-class PokemonRemoteDataSource {
+open class PokemonRemoteDataSource {
 
     private val client = HttpClient {
         install(ContentNegotiation) {
@@ -121,7 +121,7 @@ class PokemonRemoteDataSource {
     }
 
 
-    suspend fun getPokemonList(generation: Int): List<Pokemon> = withContext(Dispatchers.IO) {
+    open suspend fun getPokemonList(generation: Int): List<Pokemon> = withContext(Dispatchers.IO) {
         val response: List<ApiPokemon> =
             client.get("https://pokebuildapi.fr/api/v1/pokemon/generation/$generation") {
                 contentType(ContentType.Application.Json)

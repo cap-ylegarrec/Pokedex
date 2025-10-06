@@ -3,10 +3,10 @@ package pokemon.data.datasource
 import kotlinx.serialization.json.Json
 import pokemon.domain.model.Pokemon
 
-class PokemonLocalDataSource(private val database: PokemonDB) {
+open class PokemonLocalDataSource(private val database: PokemonDB) {
     private val queries = database.pokemonQueries
 
-    fun getPokemonList(): List<Pokemon> {
+    open fun getPokemonList(): List<Pokemon> {
         return queries.selectAll().executeAsList().map { entity ->
             Pokemon(
                 id = entity.id,
@@ -25,7 +25,7 @@ class PokemonLocalDataSource(private val database: PokemonDB) {
         }
     }
 
-    fun getPokemonById(id: Long): Pokemon? {
+    open fun getPokemonById(id: Long): Pokemon? {
         return queries.selectById(id).executeAsOneOrNull()?.let { entity ->
             Pokemon(
                 id = entity.id,
@@ -44,7 +44,7 @@ class PokemonLocalDataSource(private val database: PokemonDB) {
         }
     }
 
-    fun insertPokemonList(pokemonList: List<Pokemon>) {
+    open fun insertPokemonList(pokemonList: List<Pokemon>) {
         pokemonList.forEach { pokemon ->
             queries.insertOrReplace(
                 id = pokemon.id,

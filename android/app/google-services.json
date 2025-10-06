@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "183665545930",
+    "project_id": "pokedex-df9ea",
+    "storage_bucket": "pokedex-df9ea.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:183665545930:android:98b5f45d3db1b40b5e5a33",
+        "android_client_info": {
+          "package_name": "com.legarrec.pokedex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAY_u3YrwGpKiCxUtosk1W9pgk9_po-uno"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
