@@ -1,0 +1,12 @@
+CREATE TABLE Item (
+    name TEXT NOT NULL
+);
+
+selectAll:
+SELECT * FROM Item;
+
+insertOrReplace:
+INSERT OR REPLACE INTO Item (name) VALUES (?);
+
+deleteAll:
+DELETE FROM Item;

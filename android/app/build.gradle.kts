@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.legarrec.pokedex"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -66,6 +66,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(project(":common"))
+
 
     // Koin for Android
     implementation(libs.koin.android)

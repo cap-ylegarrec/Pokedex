@@ -1,9 +1,7 @@
 package di
 
-import core.DriverFactory
 import org.koin.core.module.Module
 import org.koin.dsl.module
-import pokemon.data.datasource.PokemonDB
 import pokemon.data.datasource.PokemonLocalDataSource
 import pokemon.data.datasource.PokemonRemoteDataSource
 import pokemon.data.repositoryimpl.PokemonRepositoryImpl
@@ -31,10 +29,10 @@ val commonModule: Module = module {
     factory { PokemonLocalDataSource(get()) }
 
     //Database
-    single {
-        val driverFactory: DriverFactory = get()
-        PokemonDB(
-            driver = driverFactory.createDriver("PokemonDB")
-        )
-    }
+//    single {
+//        val driverFactory: DriverFactory = get()
+//        PokemonDB(
+//            driver = driverFactory.createDriver("PokemonDB")
+//        )
+//    }
 }

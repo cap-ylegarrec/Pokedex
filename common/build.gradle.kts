@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.implementation
+import org.gradle.kotlin.dsl.project
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -10,7 +12,10 @@ plugins {
 }
 
 android {
-    compileSdk = 35
+    compileSdk = 36
+    defaultConfig {
+        minSdk = 29
+    }
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     namespace = "com.legarrec.pokedex.common"
 }
@@ -68,6 +73,7 @@ kotlin {
             languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
         }
         commonMain.dependencies {
+            api(project(":core"))
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.ktor.client.core)
@@ -96,13 +102,13 @@ kotlin {
     }
 }
 
-sqldelight {
-    databases {
-        create("PokemonDB") {
-            packageName.set("pokemon.data.datasource")
-        }
-    }
-}
+//sqldelight {
+//    databases {
+//        create("PokemonDB") {
+//            packageName.set("pokemon.data.datasource")
+//        }
+//    }
+//}
 
 repositories {
     mavenCentral()

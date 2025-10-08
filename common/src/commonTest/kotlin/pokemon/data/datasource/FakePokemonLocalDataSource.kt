@@ -2,7 +2,8 @@ package pokemon.data.datasource
 
 import app.cash.sqldelight.TransactionWithReturn
 import app.cash.sqldelight.TransactionWithoutReturn
-import com.legarrec.pokedex.common.PokemonQueries
+import com.pokedex.pokemon.PokemonDatabase
+import com.pokedex.pokemon.PokemonQueries
 import pokemon.domain.model.Pokemon
 
 class FakePokemonLocalDataSource : PokemonLocalDataSource(FakePokemonDb()) {
@@ -25,7 +26,7 @@ class FakePokemonLocalDataSource : PokemonLocalDataSource(FakePokemonDb()) {
     }
 }
 
-class FakePokemonDb() : PokemonDB{
+class FakePokemonDb() : PokemonDatabase {
     override lateinit var pokemonQueries: PokemonQueries
 
     override fun transaction(

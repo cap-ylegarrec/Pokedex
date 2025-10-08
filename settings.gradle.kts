@@ -26,3 +26,5 @@ include(":ios")
 include(":ios:Pokedex")
 include(":app")
 project(":app").projectDir = File(rootDir, "android/app")
+
+include(":core")

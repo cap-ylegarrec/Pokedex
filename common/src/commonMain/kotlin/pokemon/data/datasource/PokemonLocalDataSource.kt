@@ -1,9 +1,10 @@
 package pokemon.data.datasource
 
+import com.pokedex.pokemon.PokemonDatabase
 import kotlinx.serialization.json.Json
 import pokemon.domain.model.Pokemon
 
-open class PokemonLocalDataSource(private val database: PokemonDB) {
+open class PokemonLocalDataSource(private val database: PokemonDatabase) {
     private val queries = database.pokemonQueries
 
     open fun getPokemonList(): List<Pokemon> {

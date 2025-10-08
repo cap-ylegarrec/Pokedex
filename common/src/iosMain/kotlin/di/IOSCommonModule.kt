@@ -3,6 +3,6 @@ package di
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
-val androidCommonModule: Module = module {
-    includes(commonModule)
+val iOSCoreModule: Module = module {
+    includes(coreModule)
 }
